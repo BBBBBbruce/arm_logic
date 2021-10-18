@@ -1,7 +1,10 @@
 //rotation reference always x-axis
 #include"arm.h"
+#include "gamepad.h"
+#include <Xinput.h>
 int main()
-{
+{   
+    /*
     std::cout << "run a test" << std::endl;
     arm_single arm1('2d', 180, 360, 20);
     arm_single arm2('2d', 180, 360, 30);
@@ -17,7 +20,27 @@ int main()
     A.rotate_arm(3, 45);
     A.print();
     std::cout << "===================================" << "\n";
+    */
+    std::cout << "testing the gamepad function" << std::endl;
+    DWORD dwResult;
 
+    for (DWORD i = 0; i < XUSER_MAX_COUNT; i++)
+    {
+        XINPUT_STATE state;
+        ZeroMemory(&state, sizeof(XINPUT_STATE));
+
+        // Simply get the state of the controller from XInput.
+        dwResult = XInputGetState(i, &state);
+
+        if (dwResult == ERROR_SUCCESS)
+        {
+            std::cout << "controller connected" << std::endl;
+        }
+        else
+        {
+            std::cout << "Hello? where is your controller" << std::endl;
+        }
+    }
     
 
 }
