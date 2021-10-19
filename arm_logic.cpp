@@ -9,7 +9,7 @@
 
 int main()
 {   
-    /*
+   
     std::cout << "run a test" << std::endl;
     arm_single arm1('2d', 180, 360, 20);
     arm_single arm2('2d', 180, 360, 30);
@@ -25,7 +25,7 @@ int main()
     A.rotate_arm(3, 45);
     A.print();
     std::cout << "===================================" << "\n";
-    */
+    /*
     char c;
     DWORD dwResult;
     XINPUT_STATE state;
@@ -51,8 +51,9 @@ int main()
         //++++++++++++++++++++++++++++++++++++++
         if (GetAsyncKeyState(27))
             break;
-    }
-
+    }*/
+    return 0;
+    
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

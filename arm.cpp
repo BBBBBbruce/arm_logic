@@ -11,14 +11,6 @@ std::ostream& operator << (std::ostream& o, const point& a)
 }
 point current_vector(float angle, float length) {
 	float x, y;
-	//std::cout << angle << std::endl;
-	/*if (90 < angle < 180 || angle>270) {
-		x = -cos(angle * PI / 180);
-		std::cout << x << std::endl;
-	}
-	else
-		x = cos(angle * PI / 180);
-	*/
 	x = cos(angle * PI / 180);
 	//std::cout << x << std::endl;
 	y = sin(angle * PI / 180);
@@ -51,15 +43,15 @@ arm_single::arm_single(char type_arm, float rotation_angle, float angle_allow, f
 }
 
 void arm_single::rotate(float angle) {
-	if (angle + current_theta < theta_limit) {
-		current_theta = angle + current_theta;
-		point tmp_vec = current_vector(current_theta, length);
+	if (angle + world_theta < theta_limit) {
+		world_theta = angle + world_theta;
+		point tmp_vec = current_vector(world_theta, length);
 		end_point = start_point + tmp_vec;
 
 	}
-	else if (current_theta<theta_limit) {
-		float diff = theta_limit - current_theta;
-		current_theta = theta_limit;
+	else if (world_theta<theta_limit) {
+		float diff = theta_limit - world_theta;
+		world_theta = theta_limit;
 		point tmp_vec = current_vector(diff, length);
 		end_point.x = start_point.x + tmp_vec.x;
 		end_point.y = start_point.y + tmp_vec.y;
@@ -82,7 +74,7 @@ point arm_single::getstart() {
 }
 
 float arm_single::get_theta() {
-	return current_theta;
+	return world_theta;
 }
 
 float arm_single::get_len() {
@@ -103,6 +95,7 @@ void arm::rotate_arm(int joint, float angle){
 	arm_collection[joint-1].rotate(angle);
 	for (int i = joint; i < arm_collection.size(); i++) {
 		arm_collection[i].translate(arm_collection[i - 1].getend());
+		arm_collection[i].rotate(angle);
 	}
 }
 
@@ -116,4 +109,12 @@ void arm::print() {
 	for (int i = 0; i < arm_collection.size(); i++) {
 		std::cout << "arm " << i + 1 << " : {"<<arm_collection[i].getstart()<<"," << arm_collection[i].getend()<<"}, Angle at "<< arm_collection[i].get_theta()<<" length is: "<<arm_collection[i].get_len() << "\n";
 	}
+}
+
+float arm::angle_between(int joint) {
+	if (joint != 1) {
+		return arm_collection[joint - 1].get_theta() + 180 - arm_collection[joint - 2].get_theta();
+	}
+	else
+		return -1;
 }

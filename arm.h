@@ -26,7 +26,7 @@ private:
 	float theta_rotation = 0;
 	float theta_limit; //360 max, in degree
 	float length = 20;
-	float current_theta = 0;
+	float world_theta = 0;
 
 protected:
 	point start_point = {0,0};
@@ -54,6 +54,7 @@ public:
 	void init();
 	void rotate_arm(int joint, float angle);
 	void print();
+	float angle_between(int joint);
 	~arm() {};
 	
 };
