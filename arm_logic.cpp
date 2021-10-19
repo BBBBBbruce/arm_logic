@@ -1,7 +1,12 @@
 //rotation reference always x-axis
 #include"arm.h"
 #include "gamepad.h"
-#include <Xinput.h>
+#include <thread>
+#include <chrono>
+#include <winuser.h>
+
+
+
 int main()
 {   
     /*
@@ -21,27 +26,32 @@ int main()
     A.print();
     std::cout << "===================================" << "\n";
     */
-    std::cout << "testing the gamepad function" << std::endl;
+    char c;
     DWORD dwResult;
+    XINPUT_STATE state;
 
-    for (DWORD i = 0; i < XUSER_MAX_COUNT; i++)
-    {
-        XINPUT_STATE state;
-        ZeroMemory(&state, sizeof(XINPUT_STATE));
 
-        // Simply get the state of the controller from XInput.
-        dwResult = XInputGetState(i, &state);
-
-        if (dwResult == ERROR_SUCCESS)
-        {
-            std::cout << "controller connected" << std::endl;
-        }
-        else
-        {
+    std::cout << "testing the gamepad function" << std::endl;
+    std::cout << "press esc to exit! " << std::endl;
+    while (true)
+    {   
+        std::this_thread::sleep_for(std::chrono::seconds(1/60));//sampling rate: 60 times persecond
+        
+                                                                //++++++++++++++++++++++++++++++++++++++
+        dwResult = XInputGetState(0, &state);
+        if (dwResult != ERROR_SUCCESS) {
             std::cout << "Hello? where is your controller" << std::endl;
+            break;
         }
+        //echo_controller(state);
+        
+        //std::cout << "hello" << std::endl;
+        
+        
+        //++++++++++++++++++++++++++++++++++++++
+        if (GetAsyncKeyState(27))
+            break;
     }
-    
 
 }
 
