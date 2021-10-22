@@ -18,7 +18,7 @@ struct point {
 	}
 
 };
-
+std::ostream& operator << (std::ostream& o, const point& a);
 
 class arm_single {
 private:

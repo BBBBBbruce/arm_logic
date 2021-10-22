@@ -1,9 +1,7 @@
 //rotation reference always x-axis
 #include"arm.h"
 #include "gamepad.h"
-#include <thread>
-#include <chrono>
-#include <winuser.h>
+
 
 
 
@@ -29,11 +27,16 @@ int main()
     char c;
     DWORD dwResult;
     XINPUT_STATE state;
+    dwResult = XInputGetState(0, &state);
     control _gamepad;
-
+    //testing( dwResult, state);
+    _gamepad.gamepad_input(dwResult, state);
+    /*
     std::cout << "testing the gamepad function" << std::endl;
     std::cout << "press esc to exit! " << std::endl;
     int xmax = 0, xmin = 0, ymax = 0, ymin = 0;
+    int up = 0, down = 0, pleft = 0, pright = 0, start = 0, back = 0, leftt = 0, rightt = 0;
+    int lt = 0, rt = 0, a = 0, b = 0, c_ = 0, d = 0;
     while (true)
     {   
         std::this_thread::sleep_for(std::chrono::seconds(1/15));//sampling rate: 60 times persecond
@@ -58,6 +61,36 @@ int main()
             if (state.Gamepad.sThumbLY < ymin)
                 ymin = state.Gamepad.sThumbLY;
         }
+
+
+        if (state.Gamepad.wButtons == 0x0001)
+            up+=1;
+        if (state.Gamepad.wButtons == 0x0002)
+            down+=1;
+        if (state.Gamepad.wButtons == 0x0004)
+            pleft+=1;
+        if (state.Gamepad.wButtons == 0x0008)
+            pright+=1;
+        if (state.Gamepad.wButtons == 0x0010)
+            start+=1;
+        if (state.Gamepad.wButtons == 0x0020)
+            back+=1;
+        if (state.Gamepad.wButtons == 0x0040)
+            leftt+=1;
+        if (state.Gamepad.wButtons == 0x0080)
+            rightt+=1;
+        if (state.Gamepad.wButtons == 0x0100)
+            lt+=1;
+        if (state.Gamepad.wButtons == 0x0200)
+            rt+=1; // this button on my controller is broken
+        if (state.Gamepad.wButtons == 0x1000)
+            a+=1;
+        if (state.Gamepad.wButtons == 0x2000)
+            b+=1;
+        if (state.Gamepad.wButtons == 0x4000)
+            c_+=1;
+        if (state.Gamepad.wButtons == 0x8000)
+            d+=1;
         //std::cout << "hello" << std::endl;
         
         
@@ -66,6 +99,22 @@ int main()
             break;
     }
     std::cout << "xmax: " << xmax << " xmin: " << xmin << " ymax: " << ymax << " ymin: " << ymin << std::endl;
+    std::cout << "pad_up: " << up << std::endl;
+    std::cout <<"pad_down: "<< down<< std::endl;
+    std::cout <<"pad_left: " <<pleft<< std::endl;
+    std::cout << "pad_right: "<<pright << std::endl;
+    std::cout << "start: "<<start << std::endl;
+    std::cout << "back: "<<back << std::endl;
+    std::cout << "Left thumb: " << leftt << std::endl;
+    std::cout << "Right thumb: " << rightt << std::endl;
+    std::cout <<"LB: "<<lt << std::endl;
+    std::cout <<"RB: "<<rt << std::endl;
+    std::cout <<"A: " <<a<< std::endl;
+    std::cout <<"B: "<<b << std::endl;
+    std::cout <<"X: "<<c_ << std::endl;
+    std::cout <<"Y: "<<d << std::endl;
+
+    */
     return 0;
     
 }
