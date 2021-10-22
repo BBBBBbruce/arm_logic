@@ -1,6 +1,6 @@
 #include "gamepad.h"
-#include "arm.h"
 #include <iostream>
+
 void print_button(std::string s) {
 	std::cout << s << " is pressed" << std::endl;
 
@@ -135,12 +135,13 @@ void echo_controller(XINPUT_STATE state) {
 
 
 
-control::control() {
+control::control(arm arm_collection) {
 	mode = 0;
 	joint1 = 1;
 	joint2 = 2;
 	angle1 = 0;
 	angle2 = 0;
+    armset = arm_collection;
 }
 
 bool control::button_pressed(XINPUT_STATE state, WORD button) {
@@ -155,12 +156,52 @@ bool control::button_pressed(XINPUT_STATE state, WORD button) {
 	}
 }
 
+void control::toggle_mode() {
+    if (mode == 0)
+        mode = 1;
+    else
+        mode = 0;
+}
+
+void control::select_joint(WORD dir) {
+    if (mode == 1) {
+        if (dir == 0x0004) {// left
+            if (joint1 > 0) {
+                joint1 -= 1;
+            }
+        }
+        else if(dir == 0x0008){//right
+            if (joint1 + 1 < joint2) {
+                joint1 += 1;
+            }
+        }
+        if (dir == 0x4000) {// left
+            if (joint2-1> joint1) {
+                joint2 -= 1;
+            }
+        }
+        else if (dir == 0x2000) {//right
+            if (joint2< armset.get_arm_num()-1) {
+                joint1 += 1;
+            }
+        }
+
+    }
+
+}
+
+void control::change_angle(point vec, short joint) {
+    float speed = 0.00025;// degree
+    armset.rotate_arm(joint, vec);
+}
+
 void control::gamepad_input(DWORD dwResult, XINPUT_STATE state) {
 	// Y toggle mode: moving or selection
 	// PAD_LEFT & PAD_RIGHT is selection
 	// moving left or right thumbstick would lock the control to certian arm
 	
     int  pd_left = 0, pd_right = 0, y_button = 0;
+    int x_button = 0, b_button = 0;
     point left_vec = { 0,0 };
     point right_vec = { 0,0 };
     // initialise some variables as buffer
@@ -179,6 +220,7 @@ void control::gamepad_input(DWORD dwResult, XINPUT_STATE state) {
             pd_left += 1;
             if (pd_left > 40000) {
                 std::cout << "PAD_LEFT is pressed" << std::endl;
+                select_joint(0x0004);
                 pd_left = 0;
             }
         }
@@ -190,17 +232,43 @@ void control::gamepad_input(DWORD dwResult, XINPUT_STATE state) {
             pd_right += 1;
             if (pd_right > 40000) {
                 std::cout << "PAD_RIGHT is pressed" << std::endl;
+                select_joint(0x0008);
                 pd_right = 0;
             }
         }
         else {
             pd_right = 0;
         }
+
+        if (state.Gamepad.wButtons == 0x4000) { // X
+            x_button += 1;
+            if (x_button > 40000) {
+                std::cout << "Button X is pressed" << std::endl;
+                select_joint(0x4000);
+                x_button = 0;
+            }
+        }
+        else {
+            x_button = 0;
+        }
+
+        if (state.Gamepad.wButtons == 0x2000) { // B
+            b_button += 1;
+            if (b_button > 40000) {
+                std::cout << "Button B is pressed" << std::endl;
+                select_joint(0x2000);
+                b_button = 0;
+            }
+        }
+        else {
+            b_button = 0;
+        }
 			
         if (state.Gamepad.wButtons == 0x8000) { // Y
             y_button += 1;
             if (y_button > 40000) {
                 std::cout << "Button Y is pressed" << std::endl;
+                toggle_mode();
                 y_button = 0;
             }
         }
@@ -221,7 +289,7 @@ void control::gamepad_input(DWORD dwResult, XINPUT_STATE state) {
             left_vec.y = 0.;
         }
         //std::cout << "left vector: " << left_vec << std::endl;
-
+        change_angle(left_vec, joint1);
         if (abs(state.Gamepad.sThumbRX) > 4000.) {
             right_vec.x = float((state.Gamepad.sThumbRX - 4000) / 28768);
         }
@@ -235,7 +303,7 @@ void control::gamepad_input(DWORD dwResult, XINPUT_STATE state) {
             right_vec.y = 0.;
         }
         //std::cout << "right vector: " << right_vec << std::endl;
-
+        change_angle(right_vec, joint2);
         //+++++ the program above ++++++++
 
 

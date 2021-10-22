@@ -7,7 +7,7 @@
 
 int main()
 {   
-   /*
+   
     std::cout << "run a test" << std::endl;
     arm_single arm1('2d', 180, 360, 20);
     arm_single arm2('2d', 180, 360, 30);
@@ -19,16 +19,16 @@ int main()
     A.init();
     A.print();
     std::cout << "===================================" << "\n";
-    A.rotate_arm(2, 45);
-    A.rotate_arm(3, 45);
-    A.print();
-    std::cout << "===================================" << "\n";
-    */
+    //A.rotate_arm(2, 45);
+    //A.rotate_arm(3, 45);
+    //A.print();
+    //std::cout << "===================================" << "\n";
+    
     char c;
     DWORD dwResult;
     XINPUT_STATE state;
     dwResult = XInputGetState(0, &state);
-    control _gamepad;
+    control _gamepad(A);
     //testing( dwResult, state);
     _gamepad.gamepad_input(dwResult, state);
     /*

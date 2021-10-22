@@ -17,6 +17,10 @@ struct point {
 		return point{ x - a.x  , y - a.y  };
 	}
 
+	float magnitude() {
+		return sqrt(x * x + y * y);
+	}
+
 };
 std::ostream& operator << (std::ostream& o, const point& a);
 
@@ -46,15 +50,19 @@ public:
 
 class arm : arm_single {
 private:
-	int num_arms;
+	int num_arms =0 ;
 	vector<arm_single> arm_collection;
 public:
+	arm();
 	arm(int num);
+	arm(const arm &arm1);
 	void add_arm(arm_single one_arm);
 	void init();
-	void rotate_arm(int joint, float angle);
+	void rotate_arm(int joint, point vec);
 	void print();
 	float angle_between(int joint);
+	int get_arm_num() const;
+	vector<arm_single> get_arm_collection()const;
 	~arm() {};
 	
 };
