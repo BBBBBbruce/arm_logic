@@ -9,7 +9,7 @@
 
 int main()
 {   
-   
+   /*
     std::cout << "run a test" << std::endl;
     arm_single arm1('2d', 180, 360, 20);
     arm_single arm2('2d', 180, 360, 30);
@@ -25,17 +25,18 @@ int main()
     A.rotate_arm(3, 45);
     A.print();
     std::cout << "===================================" << "\n";
-    /*
+    */
     char c;
     DWORD dwResult;
     XINPUT_STATE state;
-
+    control _gamepad;
 
     std::cout << "testing the gamepad function" << std::endl;
     std::cout << "press esc to exit! " << std::endl;
+    int xmax = 0, xmin = 0, ymax = 0, ymin = 0;
     while (true)
     {   
-        std::this_thread::sleep_for(std::chrono::seconds(1/60));//sampling rate: 60 times persecond
+        std::this_thread::sleep_for(std::chrono::seconds(1/15));//sampling rate: 60 times persecond
         
                                                                 //++++++++++++++++++++++++++++++++++++++
         dwResult = XInputGetState(0, &state);
@@ -44,14 +45,27 @@ int main()
             break;
         }
         //echo_controller(state);
+        //_gamepad.gamepad_input(state);
+        //testing_thumnbstick(state);
         
+        if (state.Gamepad.sThumbLX != 0 || state.Gamepad.sThumbLY != 0) {
+            if (state.Gamepad.sThumbLX > xmax)
+                xmax = state.Gamepad.sThumbLX;
+            if (state.Gamepad.sThumbLX < xmin)
+                xmin = state.Gamepad.sThumbLX;
+            if (state.Gamepad.sThumbLY > ymax)
+                ymax = state.Gamepad.sThumbLY;
+            if (state.Gamepad.sThumbLY < ymin)
+                ymin = state.Gamepad.sThumbLY;
+        }
         //std::cout << "hello" << std::endl;
         
         
         //++++++++++++++++++++++++++++++++++++++
         if (GetAsyncKeyState(27))
             break;
-    }*/
+    }
+    std::cout << "xmax: " << xmax << " xmin: " << xmin << " ymax: " << ymax << " ymin: " << ymin << std::endl;
     return 0;
     
 }

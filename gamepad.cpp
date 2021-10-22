@@ -1,4 +1,5 @@
 #include "gamepad.h"
+#include "arm.h"
 #include <iostream>
 void print_button(std::string s) {
 	std::cout << s << " is pressed" << std::endl;
@@ -45,5 +46,26 @@ void echo_controller(XINPUT_STATE state) {
 		std::cout << "Right stick at direction: (" << state.Gamepad.sThumbRX  << "," << state.Gamepad.sThumbRY  << ")" << std::endl;
 	}
 	//std::cout<< state.Gamepad.wButtons <<std::endl;
+	
+}
+
+void testing_trigger(XINPUT_STATE state) {
+
+}
+
+
+
+control::control() {
+	mode = 0;
+	joint1 = 1;
+	joint2 = 2;
+	angle1 = 0;
+	angle2 = 0;
+}
+
+void control::gamepad_input(XINPUT_STATE state) {
+	// Y toggle mode: moving or selection
+	// PAD_LEFT & PAD_RIGHT is selection
+	// moving left or right thumbstick would lock the control to certian arm
 
 }
