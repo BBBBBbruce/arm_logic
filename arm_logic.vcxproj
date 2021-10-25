@@ -89,6 +89,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp14</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\bubbl\Documents\Visual Studio 2019\Library\glm-0.9.9.8\glm;C:\Users\bubbl\Documents\Visual Studio 2019\Library\glfw-3.3.4.bin.WIN64\glfw-3.3.4.bin.WIN64\include;C:\VulkanSDK\1.2.189.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -104,6 +105,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\bubbl\Documents\Visual Studio 2019\Library\glm-0.9.9.8\glm;C:\Users\bubbl\Documents\Visual Studio 2019\Library\glfw-3.3.4.bin.WIN64\glfw-3.3.4.bin.WIN64\include;C:\VulkanSDK\1.2.189.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
