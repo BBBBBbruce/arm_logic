@@ -147,10 +147,12 @@
     <ClCompile Include="arm.cpp" />
     <ClCompile Include="arm_logic.cpp" />
     <ClCompile Include="gamepad.cpp" />
+    <ClCompile Include="interface.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="arm.h" />
     <ClInclude Include="gamepad.h" />
+    <ClInclude Include="interface.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
