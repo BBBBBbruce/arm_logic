@@ -1,3 +1,6 @@
+#ifndef GAMEPAD_H
+#define GAMEPAD_H 
+
 #pragma once
 #pragma comment(lib, "xinput") 
 
@@ -16,8 +19,8 @@ void testing( DWORD dwResult, XINPUT_STATE state);
 class control {
 private:
 	short mode; // 0 for moving, 1 for selection
-	short joint1;
-	short joint2;
+	int joint1;
+	int joint2;
 	float angle1;
 	float angle2;
 	arm armset;
@@ -32,4 +35,5 @@ public:
 
 };
 
+#endif
 

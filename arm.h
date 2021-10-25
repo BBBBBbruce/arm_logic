@@ -1,3 +1,6 @@
+#ifndef ARM_H
+#define ARM_H 
+
 #include<vector>
 #include<iostream>
 using namespace std;
@@ -40,7 +43,7 @@ public:
 	arm_single();
 	arm_single(char type_arm, float rotation_angle, float angle_allow, float l);
 	~arm_single() {};
-	void rotate(float angle);
+	void rotate(float angle, float current_angle);
 	void translate(point attach);
 	point getstart();
 	point getend();
@@ -66,3 +69,5 @@ public:
 	~arm() {};
 	
 };
+
+#endif

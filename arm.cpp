@@ -1,14 +1,17 @@
-#include "arm.h"
+# include "arm.h"
 #include <cmath>
 
 
 #define PI 3.14159265
 
-
 float force(point vec, float world_theta) {
+	std::cout << vec << " " << world_theta << std::endl;
+
 	point current_vec = { cos(world_theta * PI / 180),sin(world_theta * PI / 180) };
+
 	float dotproduct = vec.x * current_vec.x + vec.y * current_vec.y;
 	float theta_tmp = acos(dotproduct / (vec.magnitude() * current_vec.magnitude()));
+	//std::cout << dotproduct << " " << acos(0) << std::endl;
 	return vec.magnitude() * sin(theta_tmp);
 }
 
@@ -17,7 +20,9 @@ std::ostream& operator << (std::ostream& o, const point& a)
 	o << "(" << a.x << "," << a.y << ")";
 	return o;
 }
+
 point current_vector(float angle, float length) {
+	// return 2d vector of x and y;
 	float x, y;
 	x = cos(angle * PI / 180);
 	//std::cout << x << std::endl;
@@ -50,19 +55,17 @@ arm_single::arm_single(char type_arm, float rotation_angle, float angle_allow, f
 
 }
 
-void arm_single::rotate(float angle) {
-	if (angle + world_theta < theta_limit) {
-		world_theta = angle + world_theta;
+void arm_single::rotate(float angle,float current_angle) {
+	if (angle + current_angle < theta_limit) {
+		world_theta += angle;
 		point tmp_vec = current_vector(world_theta, length);
 		end_point = start_point + tmp_vec;
 
 	}
-	else if (world_theta<theta_limit) {
-		float diff = theta_limit - world_theta;
+	else if (current_angle <theta_limit) {
 		world_theta = theta_limit;
-		point tmp_vec = current_vector(diff, length);
-		end_point.x = start_point.x + tmp_vec.x;
-		end_point.y = start_point.y + tmp_vec.y;
+		point tmp_vec = current_vector(world_theta, length);
+		end_point = start_point + tmp_vec;
 	}
 }
 
@@ -114,14 +117,31 @@ void arm::add_arm(arm_single one_arm) {
 }
 
 void arm::rotate_arm(int joint, point vec){
+	//std::cout << vec << std::endl;
 	//speed = 0.00025 dgree per input
+	//std::cout << "echo" << std::endl;
+	//std::cout << "joint" << std::endl;
 	float angle = 0;
-	angle = force(vec, arm_collection[joint - 1].get_theta())*0.00025;
-	arm_collection[joint-1].rotate(angle);
-	for (int i = joint; i < arm_collection.size(); i++) {
-		arm_collection[i].translate(arm_collection[i - 1].getend());
-		arm_collection[i].rotate(angle);
+	float current_theta;
+	//std::cout << "echo" << std::endl;
+	if (joint == 1) {
+		current_theta = arm_collection[0].get_theta();
 	}
+	else {
+		current_theta = angle_between(joint - 1);
+	}
+	//std::cout << "echo" << std::endl;
+	angle = force(vec, arm_collection[joint - 1].get_theta())*0.025;//test for later
+
+	arm_collection[joint-1].rotate(angle, current_theta);
+	
+	//std::cout << "stop" << std::endl;
+	for (int i = joint+1; i < arm_collection.size(); i++) {
+		current_theta = angle_between(i - 1);
+		arm_collection[i].translate(arm_collection[i - 1].getend());
+		arm_collection[i].rotate(angle, current_theta);
+	}
+	//std::cout << "probem" << std::endl;
 }
 
 void arm::init() {

@@ -5,6 +5,7 @@ void print_button(std::string s) {
 	std::cout << s << " is pressed" << std::endl;
 
 }
+
 void testing( DWORD dwResult, XINPUT_STATE state) {
 	std::cout << "testing the gamepad function" << std::endl;
     std::cout << "press esc to exit! " << std::endl;
@@ -13,7 +14,7 @@ void testing( DWORD dwResult, XINPUT_STATE state) {
     int lt = 0, rt = 0, a = 0, b = 0, c_ = 0, d = 0;
     while (true)
     {   
-        std::this_thread::sleep_for(std::chrono::seconds(1/15));//sampling rate: 60 times persecond
+        std::this_thread::sleep_for(std::chrono::milliseconds(150));//sampling rate: 60 times persecond
         
                                                                 //++++++++++++++++++++++++++++++++++++++
         dwResult = XInputGetState(0, &state);
@@ -21,7 +22,7 @@ void testing( DWORD dwResult, XINPUT_STATE state) {
             std::cout << "Hello? where is your controller" << std::endl;
             break;
         }
-        //echo_controller(state);
+        echo_controller(state);
         //_gamepad.gamepad_input(state);
         //testing_thumnbstick(state);
         
@@ -123,17 +124,15 @@ void echo_controller(XINPUT_STATE state) {
 		std::cout << "Left trigger pressed: " << (int)state.Gamepad.bLeftTrigger  << std::endl;
 	if (state.Gamepad.bRightTrigger != 0)
 		std::cout << "Right trigger pressed: " << (int) state.Gamepad.bRightTrigger << std::endl;
-	if (state.Gamepad.sThumbLX != 0 || state.Gamepad.sThumbLY != 0) {
+	if (state.Gamepad.sThumbLX > 4000. || state.Gamepad.sThumbLY > 4000.) {
 		std::cout << "Left stick at direction: (" << state.Gamepad.sThumbLX  << "," << state.Gamepad.sThumbLY << ")" << std::endl;
 	}
-	if (state.Gamepad.sThumbRX != 0 || state.Gamepad.sThumbRY != 0) {
+	if (state.Gamepad.sThumbRX > 4000. || state.Gamepad.sThumbRY > 4000.) {
 		std::cout << "Right stick at direction: (" << state.Gamepad.sThumbRX  << "," << state.Gamepad.sThumbRY  << ")" << std::endl;
 	}
 	//std::cout<< state.Gamepad.wButtons <<std::endl;
 	
 }
-
-
 
 control::control(arm arm_collection) {
 	mode = 0;
@@ -157,42 +156,61 @@ bool control::button_pressed(XINPUT_STATE state, WORD button) {
 }
 
 void control::toggle_mode() {
-    if (mode == 0)
+    if (mode == 0) {
         mode = 1;
-    else
+        std::cout << "selecting mode" << std::endl;
+    }
+    else {
         mode = 0;
+        std::cout << "operating mode" << std::endl;
+    }
+        
+        
 }
 
 void control::select_joint(WORD dir) {
     if (mode == 1) {
         if (dir == 0x0004) {// left
-            if (joint1 > 0) {
+            if (joint1 > 1) {
                 joint1 -= 1;
+                std::cout << "joint1 at: " << joint1 << std::endl;
             }
         }
         else if(dir == 0x0008){//right
             if (joint1 + 1 < joint2) {
                 joint1 += 1;
+                std::cout << "joint1 at: " << joint1 << std::endl;
             }
         }
         if (dir == 0x4000) {// left
             if (joint2-1> joint1) {
                 joint2 -= 1;
+                std::cout << "joint2 at: " << joint2 << std::endl;
             }
         }
         else if (dir == 0x2000) {//right
-            if (joint2< armset.get_arm_num()-1) {
-                joint1 += 1;
+            if (joint2< armset.get_arm_num()+1) {
+                joint2 += 1;
+                std::cout << "joint2 at: " << joint2 << std::endl;
             }
         }
 
+    }
+    else {
+        std::cout << "in operating mode" << std::endl;
     }
 
 }
 
 void control::change_angle(point vec, short joint) {
-    float speed = 0.00025;// degree
-    armset.rotate_arm(joint, vec);
+    if (mode == 0) {
+        //std::cout << vec << std::endl;
+        armset.rotate_arm(joint, vec);
+        armset.print();
+    }
+    else {
+        std::cout << "in selecting mode" << std::endl;
+    }
 }
 
 void control::gamepad_input(DWORD dwResult, XINPUT_STATE state) {
@@ -206,9 +224,10 @@ void control::gamepad_input(DWORD dwResult, XINPUT_STATE state) {
     point right_vec = { 0,0 };
     // initialise some variables as buffer
     std::cout << "program start" << std::endl;
+
     while (true)
     {
-        std::this_thread::sleep_for(std::chrono::seconds(1 / 15));//sampling rate: 60 times persecond                    
+        std::this_thread::sleep_for(std::chrono::milliseconds(150));//sampling rate: 60 times persecond                    
         dwResult = XInputGetState(0, &state);
         if (dwResult != ERROR_SUCCESS) {
             std::cout << "Hello? where is your controller" << std::endl;
@@ -216,66 +235,34 @@ void control::gamepad_input(DWORD dwResult, XINPUT_STATE state) {
         }
 
         //+++++ the program below ++++++++
+        //std::cout << "stop" << std::endl;
         if (state.Gamepad.wButtons == 0x0004) {// left
-            pd_left += 1;
-            if (pd_left > 40000) {
-                std::cout << "PAD_LEFT is pressed" << std::endl;
-                select_joint(0x0004);
-                pd_left = 0;
-            }
+            std::cout << "PAD_LEFT is pressed" << std::endl;
+            select_joint(0x0004);
         }
-        else {
-            pd_left = 0;
-        }
-			
+        //std::cout << "stop" << std::endl;
         if (state.Gamepad.wButtons == 0x0008) { // right
-            pd_right += 1;
-            if (pd_right > 40000) {
-                std::cout << "PAD_RIGHT is pressed" << std::endl;
-                select_joint(0x0008);
-                pd_right = 0;
-            }
+            std::cout << "PAD_RIGHT is pressed" << std::endl;
+            select_joint(0x0008);
         }
-        else {
-            pd_right = 0;
-        }
-
+        //std::cout << "stop" << std::endl;
         if (state.Gamepad.wButtons == 0x4000) { // X
-            x_button += 1;
-            if (x_button > 40000) {
-                std::cout << "Button X is pressed" << std::endl;
-                select_joint(0x4000);
-                x_button = 0;
-            }
+            std::cout << "Button X is pressed" << std::endl;
+            select_joint(0x4000);
         }
-        else {
-            x_button = 0;
-        }
-
+        //std::cout << "stop" << std::endl;
         if (state.Gamepad.wButtons == 0x2000) { // B
-            b_button += 1;
-            if (b_button > 40000) {
-                std::cout << "Button B is pressed" << std::endl;
-                select_joint(0x2000);
-                b_button = 0;
-            }
+            std::cout << "Button B is pressed" << std::endl;
+            select_joint(0x2000);
         }
-        else {
-            b_button = 0;
-        }
-			
+        //std::cout << "stop" << std::endl;
         if (state.Gamepad.wButtons == 0x8000) { // Y
-            y_button += 1;
-            if (y_button > 40000) {
-                std::cout << "Button Y is pressed" << std::endl;
-                toggle_mode();
-                y_button = 0;
-            }
+            std::cout << "Button Y is pressed" << std::endl;
+            toggle_mode();
         }
-        else {
-            y_button = 0;
-        }
+        //std::cout << "stop" << std::endl;
 		// make it sensitive, did not apply sampling, using 4000 as min deadzone 12.3%
+
 		if (abs(state.Gamepad.sThumbLX) > 4000.){
             left_vec.x = float((state.Gamepad.sThumbLX-4000.) / 28768.);
         }
@@ -289,7 +276,9 @@ void control::gamepad_input(DWORD dwResult, XINPUT_STATE state) {
             left_vec.y = 0.;
         }
         //std::cout << "left vector: " << left_vec << std::endl;
-        change_angle(left_vec, joint1);
+        if(left_vec.magnitude()>0)
+            change_angle(left_vec, joint1);
+
         if (abs(state.Gamepad.sThumbRX) > 4000.) {
             right_vec.x = float((state.Gamepad.sThumbRX - 4000) / 28768);
         }
@@ -303,7 +292,8 @@ void control::gamepad_input(DWORD dwResult, XINPUT_STATE state) {
             right_vec.y = 0.;
         }
         //std::cout << "right vector: " << right_vec << std::endl;
-        change_angle(right_vec, joint2);
+        if(right_vec.magnitude()>0)
+            change_angle(right_vec, joint2);
         //+++++ the program above ++++++++
 
 
